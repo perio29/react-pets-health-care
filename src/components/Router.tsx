@@ -15,10 +15,10 @@ export const Router = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/" element={<HomePage />} />
-          <Route path="/addpet" element={<AddPetPage />} />
+          <Route path="/add-pet" element={<AddPetPage />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/weight" element={<WeightPage />} />
-          <Route path="/treatment" element={<TreatmentPage />} />
+          <Route path="/weights" element={<WeightPage />} />
+          <Route path="/treatments" element={<TreatmentPage />} />
         </Routes>
       </BrowserRouter>
     </>
