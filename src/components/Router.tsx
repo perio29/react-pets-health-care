@@ -14,11 +14,11 @@ export const Router = () => {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/:userid" element={<HomePage />} />
-          <Route path="/:userid/addpet" element={<AddPetPage />} />
-          <Route path="/:userid/profile" element={<ProfilePage />} />
-          <Route path="/:userid/weight" element={<WeightPage />} />
-          <Route path="/:userid/treatment" element={<TreatmentPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/addpet" element={<AddPetPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/weight" element={<WeightPage />} />
+          <Route path="/treatment" element={<TreatmentPage />} />
         </Routes>
       </BrowserRouter>
     </>
