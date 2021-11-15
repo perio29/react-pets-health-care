@@ -11,7 +11,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 
 const theme = createTheme();
 
@@ -27,7 +27,12 @@ export const SignupPage = () => {
   ) => {
     e.preventDefault();
     try {
-      await auth.createUserWithEmailAndPassword(email, password);
+      const userCredential = await auth.createUserWithEmailAndPassword(
+        email,
+        password
+      );
+      const user = userCredential.user;
+      db.collection("users").doc(user?.uid).set({ displayName });
       navigate("/");
     } catch (error) {
       alert("エラーが発生しました");
