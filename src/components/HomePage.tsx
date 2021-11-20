@@ -1,23 +1,28 @@
+import { Button } from "@mui/material";
+import { Header } from "./Header";
+import { useNavigate, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { query, collection, onSnapshot, where } from "@firebase/firestore";
 import { auth, db } from "../firebase";
-import { collection, query, onSnapshot } from "firebase/firestore";
-import { Navigate } from "react-router-dom";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import { Avatar } from "@mui/material";
+import { PetCard } from "./PetCard";
+import Grid from "@mui/material/Grid";
+import { Box } from "@mui/system";
 
 export const HomePage = () => {
-  const [users, setUsers] = useState<string>("");
   const [currentUserId, setCurrentUserId] = useState<string>("");
-  const [isSignedIn, setIsSignedIn] = useState(true);
+  const [isSignedIn, setIsSignedIn] = useState<boolean>(true);
+  const [pets, setPets] = useState<Pet[]>([]);
+  const navigate = useNavigate();
 
-  interface posts {
+  interface Pet {
+    birthday: string;
+    name: string;
     id: string;
-    displayName: string;
   }
+
+  const handleAddPet = () => {
+    navigate("/add-pet");
+  };
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -32,35 +37,52 @@ export const HomePage = () => {
     return unsubscribe;
   }, []);
 
+  // petsコレクションの取得
   useEffect(() => {
-    const q = query(collection(db, "users"));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const docs: posts[] = [];
-      querySnapshot.forEach((doc) => {
-        docs.push({ id: doc.id, displayName: doc.data().displayName });
+    const q = query(
+      collection(db, "pets"),
+      where("ownerId", "==", currentUserId)
+    );
+    if (currentUserId) {
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const docs: Pet[] = [];
+        querySnapshot.forEach((doc) => {
+          docs.push({
+            id: doc.id,
+            name: doc.data().name,
+            birthday: doc.data().birthday,
+          });
+        });
+        setPets(docs);
       });
-      const doc = docs.filter((doc) => doc.id === currentUserId);
-      const user = doc[0].displayName;
-      setUsers(user);
-    });
-    return unsubscribe;
+      return unsubscribe;
+    }
   }, [currentUserId]);
 
   return (
     <>
       {currentUserId && (
         <>
-          <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
-              <Toolbar>
-                <Avatar src="/broken-image.jpg" />
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                  {users}
-                </Typography>
-
-                <Button variant="contained">ペット追加</Button>
-              </Toolbar>
-            </AppBar>
+          <Header currentUserId={currentUserId} />
+          <Button
+            style={{ marginLeft: 20, marginTop: 10, marginBottom: 10 }}
+            variant="contained"
+            onClick={handleAddPet}
+          >
+            ペット追加
+          </Button>
+          <Box style={{ margin: 20 }}>
+            <Grid
+              container
+              spacing={{ xs: 2, md: 3 }}
+              columns={{ xs: 4, sm: 8, md: 12 }}
+            >
+              {pets.map((pet) => (
+                <Grid item xs={2} sm={4} md={4} key={pet.id}>
+                  <PetCard pet={pet} />
+                </Grid>
+              ))}
+            </Grid>
           </Box>
         </>
       )}

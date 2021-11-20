@@ -63,9 +63,7 @@ export const SignupPage = () => {
                 <TextField
                   required
                   fullWidth
-                  id="email"
                   label="名前"
-                  autoComplete="email"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                 />
@@ -74,10 +72,7 @@ export const SignupPage = () => {
                 <TextField
                   required
                   fullWidth
-                  id="email"
                   label="メールアドレス"
-                  name="email"
-                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -86,11 +81,8 @@ export const SignupPage = () => {
                 <TextField
                   required
                   fullWidth
-                  name="password"
                   label="パスワード"
                   type="password"
-                  id="password"
-                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -99,11 +91,8 @@ export const SignupPage = () => {
                 <TextField
                   required
                   fullWidth
-                  name="password"
                   label="パスワード再入力"
                   type="password"
-                  id="password"
-                  autoComplete="new-password"
                   value={rePassword}
                   onChange={(e) => setRePassword(e.target.value)}
                 />
