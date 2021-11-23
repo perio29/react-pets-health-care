@@ -8,13 +8,12 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { Avatar } from "@mui/material";
 
-interface prop {
+interface Props {
   currentUserId: string;
 }
 
-export const Header = (props: prop) => {
-  const { currentUserId } = props;
-  const [users, setUsers] = useState("");
+export const Header = ({ currentUserId }: Props) => {
+  const [userName, setUserName] = useState("");
   const navigate = useNavigate();
 
   const handleClickHome = () => {
@@ -23,9 +22,8 @@ export const Header = (props: prop) => {
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "users", currentUserId), (doc) => {
-      const docs: any[] = [];
-      docs.push({ id: doc.id, ...doc.data() });
-      setUsers(docs[0].displayName);
+      const data = doc.data();
+      if (data) setUserName(data.displayName);
     });
     return unsub;
   }, [currentUserId]);
@@ -37,7 +35,7 @@ export const Header = (props: prop) => {
           <Toolbar>
             <Avatar src="/broken-image.jpg" onClick={handleClickHome} />
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              {users}
+              {userName}
             </Typography>
           </Toolbar>
         </AppBar>

@@ -3,39 +3,21 @@ import { Header } from "./Header";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { query, collection, onSnapshot, where } from "@firebase/firestore";
-import { auth, db } from "../firebase";
+import { db } from "../firebase";
 import { PetCard } from "./PetCard";
 import Grid from "@mui/material/Grid";
 import { Box } from "@mui/system";
+import { useCurrentUser } from "../hooks/UseCurrentUser";
+import { Pet } from "../types/pet";
 
 export const HomePage = () => {
-  const [currentUserId, setCurrentUserId] = useState<string>("");
-  const [isSignedIn, setIsSignedIn] = useState<boolean>(true);
   const [pets, setPets] = useState<Pet[]>([]);
   const navigate = useNavigate();
-
-  interface Pet {
-    birthday: string;
-    name: string;
-    id: string;
-  }
+  const { currentUserId, isSignedIn } = useCurrentUser();
 
   const handleAddPet = () => {
     navigate("/add-pet");
   };
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setCurrentUserId(user.uid);
-        setIsSignedIn(true);
-      } else {
-        setCurrentUserId("");
-        setIsSignedIn(false);
-      }
-    });
-    return unsubscribe;
-  }, []);
 
   // petsコレクションの取得
   useEffect(() => {

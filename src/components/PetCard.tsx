@@ -4,11 +4,14 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
+import { Pet } from "../types/pet";
 
-export const PetCard = (props: any) => {
-  const { pet } = props;
+type Props = {
+  pet: Pet;
+};
 
+export const PetCard = ({ pet }: Props) => {
   const navigate = useNavigate();
 
   const handleClickProfile = () => {
@@ -23,7 +26,7 @@ export const PetCard = (props: any) => {
             {pet.name}
           </Typography>
           <Typography variant="h5" component="div">
-            {dayjs(pet.birthday).format("YYYY/MM/DD HH:mm")}
+            {pet.birthday.toDate().toString()}
           </Typography>
         </CardContent>
         <CardActions>

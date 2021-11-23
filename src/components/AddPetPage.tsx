@@ -31,12 +31,12 @@ export const AddPetPage = () => {
     return firebase.firestore.Timestamp.fromDate(new Date(datetimeStr));
   };
 
-  const handleClickAdd = (
+  const handleClickAdd = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
     try {
-      addDoc(collection(db, "pets"), {
+      await addDoc(collection(db, "pets"), {
         name: name,
         birthday: timestamp(birthday),
         species: species,
