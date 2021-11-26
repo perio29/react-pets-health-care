@@ -1,7 +1,7 @@
 export const ProfilePage = () => {
   return (
     <>
-      <h1>プロフィール</h1>
+      <h1>Profile</h1>
     </>
   );
 };
