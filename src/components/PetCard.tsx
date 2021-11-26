@@ -6,6 +6,8 @@ import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 // import dayjs from "dayjs";
 import { Pet } from "../types/pet";
+import { deleteDoc, doc } from "firebase/firestore";
+import { db } from "../firebase";
 
 type Props = {
   pet: Pet;
@@ -30,7 +32,14 @@ export const PetCard = ({ pet }: Props) => {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button variant="contained">削除</Button>
+          <Button
+            variant="contained"
+            onClick={async () => {
+              await deleteDoc(doc(db, "pets", pet.id));
+            }}
+          >
+            削除
+          </Button>
           <Button variant="contained">編集</Button>
         </CardActions>
       </Card>

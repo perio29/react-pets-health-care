@@ -31,8 +31,8 @@ export const SignupPage = () => {
         email,
         password
       );
-      const user = await userCredential.user;
-      db.collection("users").doc(user?.uid).set({ displayName });
+      const user = userCredential.user;
+      await db.collection("users").doc(user?.uid).set({ displayName });
       navigate("/");
     } catch (error) {
       alert("エラーが発生しました");
