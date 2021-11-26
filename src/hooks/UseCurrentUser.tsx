@@ -3,7 +3,7 @@ import { auth } from "../firebase";
 
 export const useCurrentUser = () => {
   const [currentUserId, setCurrentUserId] = useState("");
-  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(true);
 
   const unsubscribe = auth.onAuthStateChanged((user) => {
     if (user) {

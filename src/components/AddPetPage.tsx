@@ -1,17 +1,19 @@
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { useEffect, useState } from "react";
-import { Button } from "@mui/material";
+import { Button, MenuItem, Select } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { collection, addDoc } from "firebase/firestore";
 import { auth, db, myTimeStamp } from "../firebase";
-import firebase from "firebase/compat/app";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import DatePicker from "@mui/lab/DatePicker";
 
 export const AddPetPage = () => {
   const [name, setName] = useState<string>("");
   const [species, setSpecies] = useState<string>("");
-  const [birthday, setBirthday] = useState<string>("");
-  const [sex, setSex] = useState("");
+  const [birthday, setBirthday] = useState<Date | null>(null);
+  const [sex, setSex] = useState<"オス" | "メス">("オス");
   const [currentUserId, setCurrentUserId] = useState<string>("");
 
   const navigate = useNavigate();
@@ -27,10 +29,6 @@ export const AddPetPage = () => {
     return unsubscribe;
   }, []);
 
-  const timestamp = (datetimeStr: string) => {
-    return firebase.firestore.Timestamp.fromDate(new Date(datetimeStr));
-  };
-
   const handleClickAdd = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -38,7 +36,7 @@ export const AddPetPage = () => {
     try {
       await addDoc(collection(db, "pets"), {
         name: name,
-        birthday: timestamp(birthday),
+        birthday: birthday,
         species: species,
         sex: sex,
         createdAt: myTimeStamp,
@@ -50,7 +48,7 @@ export const AddPetPage = () => {
     navigate("/");
   };
 
-  const handleClickHome = () => {
+  const handleClickClose = () => {
     navigate("/");
   };
 
@@ -60,9 +58,10 @@ export const AddPetPage = () => {
         component="form"
         sx={{
           marginTop: 8,
+          marginLeft: 50,
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          alignItems: "flex-start",
         }}
       >
         <div>
@@ -78,14 +77,16 @@ export const AddPetPage = () => {
         </div>
         <div>
           <p>生年月日</p>
-          <TextField
-            sx={{ width: 1000 }}
-            placeholder="1999/01/11 ※半角英数字で入力してください"
-            value={birthday}
-            onChange={(e) => {
-              setBirthday(e.target.value);
-            }}
-          />
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DatePicker
+              label="Basic example"
+              value={birthday}
+              onChange={(newBirthday) => {
+                setBirthday(newBirthday);
+              }}
+              renderInput={(params) => <TextField {...params} />}
+            />
+          </LocalizationProvider>
         </div>
         <div>
           <p>種類</p>
@@ -100,24 +101,27 @@ export const AddPetPage = () => {
         </div>
         <div>
           <p>性別</p>
-          <TextField
-            sx={{ width: 1000 }}
-            placeholder="オス"
+          <Select
             value={sex}
+            sx={{ width: 1000 }}
             onChange={(e) => {
-              setSex(e.target.value);
+              if (e.target.value === "オス" || e.target.value === "メス")
+                setSex(e.target.value);
             }}
-          />
+          >
+            <MenuItem value={"オス"}>オス</MenuItem>
+            <MenuItem value={"メス"}>メス</MenuItem>
+          </Select>
         </div>
-        <div style={{ width: 1000 }}>
-          <Button
+        {/* <div style={{ width: 1000 }}>
+          {/* <Button
             style={{ marginTop: 20, marginRight: 20 }}
             variant="outlined"
             onClick={handleClickAdd}
           >
             写真を追加
-          </Button>
-        </div>
+          </Button> */}
+        {/* </div> */}
         <div>
           <Button
             style={{ marginTop: 20, marginRight: 20 }}
@@ -129,7 +133,7 @@ export const AddPetPage = () => {
           <Button
             style={{ marginTop: 20 }}
             variant="contained"
-            onClick={handleClickHome}
+            onClick={handleClickClose}
           >
             戻る
           </Button>
