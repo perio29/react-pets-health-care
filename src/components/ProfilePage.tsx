@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 import dayjs from "dayjs";
 import { Button } from "@mui/material";
@@ -8,48 +9,52 @@ import styled from "@emotion/styled";
 
 export const ProfilePage = () => {
   const params = useParams();
-  const [petName, setPetName] = useState("");
-  const [petBirthday, setPetBirthday] = useState("");
-  const [petSex, setPetSex] = useState("");
-  const [petSpecies, setPetSpecies] = useState("");
+  const [pet, setPet] = useState<Pet>();
   const navigate = useNavigate();
 
   const docId = params.petId;
 
   const handleClickWeight = () => {
-    navigate(`/weights/${docId}`);
+    navigate(`/profile/${docId}/weights`);
   };
 
   const handleClickTreatment = () => {
-    navigate(`/treatments/${docId}`);
+    navigate(`/profile/${docId}/treatments`);
   };
 
-  useEffect(() => {
-    const docRef = db
-      .collection("pets")
-      .doc(docId)
-      .onSnapshot((doc) => {
-        const docRef = doc.data();
-        if (docRef) {
-          setPetName(docRef.name);
-          setPetSex(docRef.sex);
-          setPetSpecies(docRef.species);
-          setPetBirthday(docRef.birthday.toDate().toString());
-        }
-      });
+  interface Pet {
+    name: string;
+    sex: string;
+    species: string;
+    birthday: string;
+  }
 
-    return docRef;
-  }, [docId]);
+  useEffect(() => {
+    const unsubscribe = onSnapshot(doc(db, `pets/${docId}`), (doc) => {
+      const docRef = doc.data();
+      if (docRef) {
+        setPet({
+          ...pet,
+          name: docRef.name,
+          sex: docRef.sex,
+          species: docRef.species,
+          birthday: docRef.birthday.toDate().toString(),
+        });
+      }
+    });
+
+    return unsubscribe;
+  }, [pet, docId]);
 
   return (
     <>
       <Container>
         <MainDiv>
-          <Title>{petName}</Title>
+          <Title>{pet?.name}</Title>
           <SubDiv>
-            <p>生年月日：{`${dayjs(petBirthday).format("YYYY/MM/DD")}`}</p>
-            <p>性別：{petSex}</p>
-            <p>種類：{petSpecies}</p>
+            <p>生年月日：{`${dayjs(pet?.birthday).format("YYYY/MM/DD")}`}</p>
+            <p>性別：{pet?.sex}</p>
+            <p>種類：{pet?.species}</p>
           </SubDiv>
           <ButtonDiv>
             <Button

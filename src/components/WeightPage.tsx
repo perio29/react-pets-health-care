@@ -4,6 +4,7 @@ import { Button, Container, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { db } from "../firebase";
+import { doc, onSnapshot } from "firebase/firestore";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import { Box } from "@mui/system";
 import styled from "@emotion/styled";
@@ -26,17 +27,14 @@ export const WeightPage = () => {
   };
 
   useEffect(() => {
-    const docRef = db
-      .collection("pets")
-      .doc(docId)
-      .onSnapshot((doc) => {
-        const docRef = doc.data();
-        if (docRef) {
-          setPetName(docRef.name);
-        }
-      });
+    const unsubscribe = onSnapshot(doc(db, `pets/${docId}`), (doc) => {
+      const docRef = doc.data();
+      if (docRef) {
+        setPetName(docRef.name);
+      }
+    })
 
-    return docRef;
+    return unsubscribe;
   }, [docId]);
 
   return (

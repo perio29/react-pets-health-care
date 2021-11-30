@@ -16,8 +16,11 @@ export const Router = () => {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/profile/:petId" element={<ProfilePage />} />
-          <Route path="/weights/:petId" element={<WeightPage />} />
-          <Route path="/treatments/:petId" element={<TreatmentPage />} />
+          <Route path="/profile/:petId/weights" element={<WeightPage />} />
+          <Route
+            path="/profile/:petId/treatments"
+            element={<TreatmentPage />}
+          />
           <Route path="/add-pet" element={<AddPetPage />} />
         </Routes>
       </BrowserRouter>
