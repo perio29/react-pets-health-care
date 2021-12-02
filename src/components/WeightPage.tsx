@@ -1,12 +1,29 @@
 import DatePicker from "@mui/lab/DatePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import { Button, Container, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { db } from "../firebase";
-import { doc, onSnapshot } from "firebase/firestore";
+import { Weight } from "../types/pet";
+import dayjs from "dayjs";
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Legend,
+  Tooltip,
+} from "recharts";
+import {
+  doc,
+  addDoc,
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
-import { Box } from "@mui/system";
 import styled from "@emotion/styled";
 
 export const WeightPage = () => {
@@ -15,11 +32,33 @@ export const WeightPage = () => {
   const [isModalOn, setIsModalOn] = useState(false);
   const [weightDate, setWeightDate] = useState<Date | null>(null);
   const params = useParams();
+  const [weights, setWeights] = useState<Weight[]>([]);
 
   const docId = params.petId;
 
-  const handleAddWeight = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const result = weights.map((weight) => {
+    return {
+      time: `${dayjs(weight.weightDate).format("YYYY/MM/DD")}`,
+      volume: weight.volume,
+    };
+  });
+
+  const handleChangeWeight = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
     setWeight(e.target.value);
+  };
+
+  // 体重データの追加
+  const handleClickAddWeights = async () => {
+    try {
+      await addDoc(collection(db, `pets/${docId}/weights`), {
+        volume: weight,
+        createdAt: weightDate,
+      });
+    } catch (error) {
+      alert("エラーが発生しました");
+    }
+    setWeight("");
   };
 
   const handleClickEdit = () => {
@@ -32,8 +71,28 @@ export const WeightPage = () => {
       if (docRef) {
         setPetName(docRef.name);
       }
-    })
+    });
 
+    return unsubscribe;
+  }, [docId]);
+
+  // weightsコレクションの取得
+  useEffect(() => {
+    const q = query(
+      collection(db, `pets/${docId}/weights`),
+      orderBy("createdAt")
+    );
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const weightData: Weight[] = [];
+      querySnapshot.forEach((doc) => {
+        weightData.push({
+          id: doc.id,
+          volume: doc.data().volume,
+          weightDate: doc.data().createdAt.toDate().toString(),
+        });
+      });
+      setWeights(weightData);
+    });
     return unsubscribe;
   }, [docId]);
 
@@ -45,14 +104,24 @@ export const WeightPage = () => {
           <SubDiv>
             <p>体重を入力</p>
             <InputDiv>
-              <input
+              <Input
                 type="text"
                 placeholder="20.0kg"
-                onChange={handleAddWeight}
+                onChange={handleChangeWeight}
               />
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DatePicker
+                  value={weightDate}
+                  onChange={(newBirthday) => {
+                    setWeightDate(newBirthday);
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
               <Button
                 style={{ marginLeft: 20, marginTop: 10, marginBottom: 10 }}
                 variant="contained"
+                onClick={handleClickAddWeights}
               >
                 保存
               </Button>
@@ -65,43 +134,27 @@ export const WeightPage = () => {
               </Button>
             </InputDiv>
           </SubDiv>
+          <LineDiv>
+            <LineChart width={1344} height={250} data={result}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="time" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="volume" stroke="#82ca9d" />
+            </LineChart>
+          </LineDiv>
         </MainDiv>
       </ContainerDiv>
 
       {isModalOn && (
         <Container
-          style={{
-            padding: 0,
-            width: "100%",
-            position: "fixed",
-            top: 0,
-            minHeight: "100vh",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+          onClick={() => {
+            setIsModalOn(!isModalOn);
           }}
         >
-          <Box
-            sx={{
-              bgcolor: "#cfe8fc",
-              width: "100%",
-              height: "100vh",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                label="Basic example"
-                value={weightDate}
-                onChange={(newBirthday) => {
-                  setWeightDate(newBirthday);
-                }}
-                renderInput={(params) => <TextField {...params} />}
-              />
-            </LocalizationProvider>
-            <div>
+          <ModalDiv>
+            <ModalInputDiv>
               <input type="text" placeholder="21.3kg" />
               <Button
                 style={{ marginLeft: 20, marginTop: 10, marginBottom: 10 }}
@@ -115,8 +168,8 @@ export const WeightPage = () => {
               >
                 削除
               </Button>
-            </div>
-          </Box>
+            </ModalInputDiv>
+          </ModalDiv>
         </Container>
       )}
     </>
@@ -134,7 +187,7 @@ const MainDiv = styled("div")`
 `;
 
 const SubDiv = styled("div")`
-  width: 800px;
+  width: 850px;
   font-size: 40px;
   font-weight: 800;
   margin: 0 auto;
@@ -150,4 +203,36 @@ const Title = styled("h1")`
 
 const InputDiv = styled("div")`
   margin-left: 30px;
+`;
+
+const Input = styled("input")`
+  margin-right: 20px;
+`;
+
+const LineDiv = styled("div")`
+  margin: 0 auto;
+`;
+
+const Container = styled("div")`
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const ModalDiv = styled("div")`
+  width: 500px;
+  height: 200px;
+  margin: 0 auto;
+  background-color: #fff;
+`;
+
+const ModalInputDiv = styled("div")`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

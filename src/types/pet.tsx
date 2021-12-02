@@ -6,3 +6,8 @@ export interface Pet {
   id: string;
 }
 
+export interface Weight {
+  id: string;
+  volume: number;
+  weightDate: string;
+}
