@@ -4,7 +4,7 @@ import { Button, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { db } from "../firebase";
-import { Weight } from "../types/pet";
+import { Weight } from "../types/weight";
 import dayjs from "dayjs";
 import {
   LineChart,
@@ -38,7 +38,9 @@ export const WeightPage = () => {
 
   const result = weights.map((weight) => {
     return {
-      time: `${dayjs(weight.weightDate).format("YYYY/MM/DD")}`,
+      time: `${dayjs(weight.weightDate.toDate().toString()).format(
+        "YYYY/MM/DD"
+      )}`,
       volume: weight.volume,
     };
   });
@@ -88,7 +90,7 @@ export const WeightPage = () => {
         weightData.push({
           id: doc.id,
           volume: doc.data().volume,
-          weightDate: doc.data().createdAt.toDate().toString(),
+          weightDate: doc.data().createdAt,
         });
       });
       setWeights(weightData);
@@ -104,16 +106,17 @@ export const WeightPage = () => {
           <SubDiv>
             <p>体重を入力</p>
             <InputDiv>
-              <Input
-                type="text"
-                placeholder="20.0kg"
+              <input
+                type="number"
+                placeholder="20.0"
                 onChange={handleChangeWeight}
               />
+              <InputSpan>kg</InputSpan>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
                   value={weightDate}
-                  onChange={(newBirthday) => {
-                    setWeightDate(newBirthday);
+                  onChange={(newWeightDate) => {
+                    setWeightDate(newWeightDate);
                   }}
                   renderInput={(params) => <TextField {...params} />}
                 />
@@ -205,8 +208,10 @@ const InputDiv = styled("div")`
   margin-left: 30px;
 `;
 
-const Input = styled("input")`
+const InputSpan = styled("span")`
+  font-size: 15px;
   margin-right: 20px;
+  margin-left: 5px;
 `;
 
 const LineDiv = styled("div")`
