@@ -23,7 +23,10 @@ export const PetCard = ({ pet }: Props) => {
   return (
     <>
       <Card sx={{ minWidth: 275 }}>
-        <CardContent onClick={handleClickProfile}>
+        <CardContent
+          sx={{ "&:hover": { cursor: "pointer" } }}
+          onClick={handleClickProfile}
+        >
           <Typography style={{ marginBottom: 10 }} variant="h5" component="div">
             {pet.name}
           </Typography>

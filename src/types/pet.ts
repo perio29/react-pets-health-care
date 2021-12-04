@@ -5,4 +5,3 @@ export interface Pet {
   name: string;
   id: string;
 }
-
