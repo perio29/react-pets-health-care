@@ -125,6 +125,7 @@ export const WeightPage = () => {
                 style={{ marginLeft: 20, marginTop: 10, marginBottom: 10 }}
                 variant="contained"
                 onClick={handleClickAddWeights}
+                disabled={!weightDate || !weight}
               >
                 保存
               </Button>
