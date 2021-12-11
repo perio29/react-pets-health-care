@@ -103,6 +103,7 @@ export const WeightPage = () => {
       <ContainerDiv>
         <MainDiv>
           <Title>{petName}</Title>
+
           <SubDiv>
             <p>体重を入力</p>
             <InputDiv>
