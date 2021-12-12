@@ -12,10 +12,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import styled from "@emotion/styled";
-import { Button, TextField } from "@mui/material";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import DatePicker from "@mui/lab/DatePicker";
-import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import { Button } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -24,15 +21,16 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Treatment } from "../types/treatment";
+import { TreatmentModal } from "./TreatmentModal";
 
 export const TreatmentPage = () => {
-  const [petName, setPetName] = useState<string>("");
+  const [petName, setPetName] = useState("");
   const params = useParams();
-  const [isModalOn, setIsModalOn] = useState<boolean>(false);
+  const [isModalOn, setIsModalOn] = useState(false);
   const [date, setDate] = useState<Date | null>(null);
-  const [title, setTitle] = useState<string>("");
-  const [text, setText] = useState<string>("");
-  const [treatmentData, setTreatmentData] = useState<Treatment[]>([]);
+  const [title, setTitle] = useState("");
+  const [text, setText] = useState("");
+  const [treatments, setTreatments] = useState<Treatment[]>([]);
 
   const docId = params.petId;
 
@@ -48,6 +46,9 @@ export const TreatmentPage = () => {
         createdAt: date,
         text: text,
       });
+      setDate(null);
+      setTitle("");
+      setText("");
     } catch (error) {
       alert("エラーが発生しました");
     }
@@ -75,14 +76,15 @@ export const TreatmentPage = () => {
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const treatmentData: Treatment[] = [];
       querySnapshot.forEach((doc) => {
+        const { title, text, createdAt } = doc.data();
         treatmentData.push({
           id: doc.id,
-          title: doc.data().title,
-          text: doc.data().text,
-          createdAt: doc.data().createdAt,
+          title: title,
+          text: text,
+          createdAt: createdAt,
         });
       });
-      setTreatmentData(treatmentData);
+      setTreatments(treatmentData);
     });
     return unsubscribe;
   }, [docId]);
@@ -112,7 +114,7 @@ export const TreatmentPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {treatmentData.map((data) => (
+              {treatments.map((data) => (
                 <TableRow
                   key={data.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -145,57 +147,18 @@ export const TreatmentPage = () => {
 
       {isModalOn && (
         <>
-          <Modal>
-            <InputDiv>
-              <InputBox>
-                <DateDiv>
-                  <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DatePicker
-                      value={date}
-                      onChange={(newDate) => {
-                        setDate(newDate);
-                      }}
-                      renderInput={(params) => <TextField {...params} />}
-                    />
-                  </LocalizationProvider>
-                </DateDiv>
-                <ModalTitle>タイトル</ModalTitle>
-                <InputArea
-                  type="text"
-                  onChange={(e) => {
-                    setTitle(e.target.value);
-                  }}
-                  value={title}
-                />
-                <ModalTitle>診療内容</ModalTitle>
-
-                <TextArea
-                  value={text}
-                  onChange={(e) => {
-                    setText(e.target.value);
-                  }}
-                />
-                <Button
-                  style={{ display: "block", margin: "20px auto 0px" }}
-                  variant="contained"
-                  onClick={handleClickAddEvent}
-                  disabled={date === null || title === "" || text === ""}
-                >
-                  登録
-                </Button>
-
-                <Button
-                  style={{ display: "block", margin: "20px 0px 0px auto" }}
-                  variant="contained"
-                  onClick={() => {
-                    setIsModalOn(false);
-                  }}
-                >
-                  閉じる
-                </Button>
-              </InputBox>
-            </InputDiv>
-          </Modal>
+          {
+            <TreatmentModal
+              date={date}
+              setDate={setDate}
+              title={title}
+              setTitle={setTitle}
+              text={text}
+              setText={setText}
+              handleClickAddEvent={handleClickAddEvent}
+              setIsModalOn={setIsModalOn}
+            />
+          }
         </>
       )}
     </>
@@ -220,45 +183,5 @@ const ButtonDiv = styled("div")`
 const RecordTitle = styled("h2")`
   font-size: 30px;
   font-weight: bold;
-`;
-
-const Modal = styled("div")`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-`;
-
-const InputDiv = styled("div")`
-  width: 800px;
-  background-color: #fff;
-  display; flex;
-  padding: 50px 0;
-`;
-
-const InputBox = styled("div")`
-  text-align: center;
-  margin: auto auto;
-  width: 400px;
-`;
-
-const DateDiv = styled("div")``;
-
-const ModalTitle = styled("p")`
-  font-size: 20px;
-  font-weight: bold;
-`;
-
-const InputArea = styled("input")`
-  width: 230px;
-`;
-
-const TextArea = styled("textarea")`
-  width: 230px;
+  //
 `;
