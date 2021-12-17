@@ -6,6 +6,9 @@ import dayjs from "dayjs";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router";
 import styled from "@emotion/styled";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
 
 export const ProfilePage = () => {
   const params = useParams();
@@ -48,42 +51,48 @@ export const ProfilePage = () => {
 
   return (
     <>
-      <Container>
-        <MainDiv>
-          <Title>{pet?.name}</Title>
-          <SubDiv>
-            <p>生年月日：{`${dayjs(pet?.birthday).format("YYYY/MM/DD")}`}</p>
-            <p>性別：{pet?.sex}</p>
-            <p>種類：{pet?.species}</p>
-          </SubDiv>
-          <ButtonDiv>
-            <Button
-              style={{ fontSize: "30px" }}
-              variant="contained"
-              onClick={handleClickWeight}
-            >
-              体重管理
-            </Button>
-            <Button
-              style={{ fontSize: "30px" }}
-              variant="contained"
-              onClick={handleClickTreatment}
-            >
-              診療履歴
-            </Button>
-          </ButtonDiv>
-        </MainDiv>
+      <Container maxWidth="lg">
+        <Box sx={{ bgcolor: "#fff", height: "100vh" }}>
+          <MainDiv>
+            <Typography variant="h2" gutterBottom component="div">
+              {pet?.name}
+            </Typography>
+            <SubDiv>
+              <Typography variant="h3" gutterBottom component="div">
+                生年月日:{`${dayjs(pet?.birthday).format("YYYY/MM/DD")}`}
+              </Typography>
+              <Typography variant="h3" gutterBottom component="div">
+                性別:{pet?.sex}
+              </Typography>
+              <Typography variant="h3" gutterBottom component="div">
+                種類:{pet?.species}
+              </Typography>
+            </SubDiv>
+            <ButtonDiv>
+              <Button
+                sx={{ fontSize: "30px" }}
+                variant="contained"
+                onClick={handleClickWeight}
+              >
+                体重管理
+              </Button>
+              <Button
+                sx={{ fontSize: "30px", marginLeft: "20px" }}
+                variant="contained"
+                onClick={handleClickTreatment}
+              >
+                診療履歴
+              </Button>
+            </ButtonDiv>
+          </MainDiv>
+        </Box>
       </Container>
     </>
   );
 };
 
-const Container = styled("div")`
-  min-height: 100vh;
-  width: 100%;
-`;
-
 const MainDiv = styled("div")`
+  padding-top: 10px;
   width: 80%;
   margin: 0 auto;
 `;
@@ -94,15 +103,9 @@ const SubDiv = styled("div")`
   margin-left: 20px;
 `;
 
-const Title = styled("h1")`
-  color: #333;
-  font-size: 50px;
-  font-weight: bold;
-`;
-
 const ButtonDiv = styled("div")`
   text-align: center;
-  margin: 0 auto;
+  margin: 30px auto 0;
   display: flex;
   justify-content: space-around;
 `;

@@ -14,6 +14,7 @@ import {
   YAxis,
   Legend,
   Tooltip,
+  ResponsiveContainer,
 } from "recharts";
 import {
   doc,
@@ -139,8 +140,9 @@ export const WeightPage = () => {
               </Button>
             </InputDiv>
           </SubDiv>
-          <LineDiv>
-            <LineChart width={1344} height={250} data={result}>
+
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart data={result}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="time" />
               <YAxis />
@@ -148,7 +150,7 @@ export const WeightPage = () => {
               <Legend />
               <Line type="monotone" dataKey="volume" stroke="#82ca9d" />
             </LineChart>
-          </LineDiv>
+          </ResponsiveContainer>
         </MainDiv>
       </ContainerDiv>
 
@@ -192,18 +194,26 @@ const MainDiv = styled("div")`
 `;
 
 const SubDiv = styled("div")`
-  width: 850px;
+  width: 80%;
   font-size: 40px;
   font-weight: 800;
   margin: 0 auto;
   display: flex;
   align-items: center;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 const Title = styled("h1")`
   color: #000;
   font-size: 50px;
   font-weight: bold;
+
+  @media screen and (max-width: 768px) {
+    margin: 0;
+  }
 `;
 
 const InputDiv = styled("div")`
@@ -214,10 +224,6 @@ const InputSpan = styled("span")`
   font-size: 15px;
   margin-right: 20px;
   margin-left: 5px;
-`;
-
-const LineDiv = styled("div")`
-  margin: 0 auto;
 `;
 
 const Container = styled("div")`
