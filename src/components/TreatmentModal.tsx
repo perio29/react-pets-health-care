@@ -31,6 +31,7 @@ export const TreatmentModal = ({
         <InputDiv>
           <InputBox>
             <DateDiv>
+              <ModalTitle>日付</ModalTitle>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
                   value={date}
@@ -96,16 +97,24 @@ const Modal = styled("div")`
 `;
 
 const InputDiv = styled("div")`
-  width: 800px;
+  width: 700px;
   background-color: #fff;
   display; flex;
   padding: 50px 0;
+
+  @media screen and (max-width: 768px) {
+    width: 50%;
+  }
 `;
 
 const InputBox = styled("div")`
   text-align: center;
   margin: auto auto;
   width: 400px;
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const DateDiv = styled("div")``;
@@ -117,8 +126,16 @@ const ModalTitle = styled("p")`
 
 const InputArea = styled("input")`
   width: 230px;
+
+  @media screen and (max-width: 768px) {
+    width: 90%;
+  }
 `;
 
 const TextArea = styled("textarea")`
   width: 230px;
+
+  @media screen and (max-width: 768px) {
+    width: 90%;
+  }
 `;

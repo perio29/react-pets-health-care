@@ -57,25 +57,27 @@ export const AddPetPage = () => {
       <Box
         component="form"
         sx={{
-          marginTop: 8,
-          marginLeft: 50,
+          marginTop: "20px",
+          marginLeft: "auto",
+          marginRight: "auto",
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
+          width: "70%",
         }}
       >
-        <div>
+        <Box sx={{ width: "100%" }}>
           <p>名前</p>
           <TextField
-            sx={{ width: 1000 }}
+            sx={{ width: "100%" }}
             placeholder="ポチ"
             value={name}
             onChange={(e) => {
               setName(e.target.value);
             }}
           />
-        </div>
-        <div>
+        </Box>
+        <Box sx={{ width: "100%" }}>
           <p>生年月日</p>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
@@ -87,23 +89,23 @@ export const AddPetPage = () => {
               renderInput={(params) => <TextField {...params} />}
             />
           </LocalizationProvider>
-        </div>
-        <div>
+        </Box>
+        <Box sx={{ width: "100%" }}>
           <p>種類</p>
           <TextField
-            sx={{ width: 1000 }}
+            sx={{ width: "100%" }}
             placeholder="雑種"
             value={species}
             onChange={(e) => {
               setSpecies(e.target.value);
             }}
           />
-        </div>
-        <div>
+        </Box>
+        <Box sx={{ width: "100%" }}>
           <p>性別</p>
           <Select
             value={sex}
-            sx={{ width: 1000 }}
+            sx={{ width: "100%" }}
             onChange={(e) => {
               if (e.target.value === "オス" || e.target.value === "メス")
                 setSex(e.target.value);
@@ -112,17 +114,8 @@ export const AddPetPage = () => {
             <MenuItem value={"オス"}>オス</MenuItem>
             <MenuItem value={"メス"}>メス</MenuItem>
           </Select>
-        </div>
-        {/* <div style={{ width: 1000 }}>
-          {/* <Button
-            style={{ marginTop: 20, marginRight: 20 }}
-            variant="outlined"
-            onClick={handleClickAdd}
-          >
-            写真を追加
-          </Button> */}
-        {/* </div> */}
-        <div>
+        </Box>
+        <Box>
           <Button
             style={{ marginTop: 20, marginRight: 20 }}
             variant="contained"
@@ -137,7 +130,7 @@ export const AddPetPage = () => {
           >
             戻る
           </Button>
-        </div>
+        </Box>
       </Box>
     </>
   );
